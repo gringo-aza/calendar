@@ -39,15 +39,19 @@
         :key="d.format('YYYY-MM-DD')"
         @click="dayHandle(d)"
         :class="[
-    'border border-slate-300 flex flex-col h-24 justify-center cursor-pointer hover:bg-gray-300 active:bg-gray-500',
-    d.isToday() ? 'bg-orange-100 mx-10 rounded-full' : '',
-    (d.date() === chosenDay.day && (d.month() + 1) === chosenDay.month) ? 'border-4 border-gray-200' : ''
+    'border flex flex-col h-24 justify-center cursor-pointer select-none',
+    'border-slate-300 dark:border-slate-600',
+    'hover:bg-gray-300 dark:hover:bg-gray-700',
+    'active:bg-gray-500 dark:active:bg-gray-800',
+    d.isToday() ? 'bg-orange-100 dark:bg-orange-600 mx-10 rounded-full' : '',
+    (d.date() === chosenDay.day && (d.month() + 1) === chosenDay.month) ? 'border-4 border-gray-200 dark:border-gray-400' : ''
   ]"
       >
-        <div class="text-center">
+        <div class="text-center text-gray-900 dark:text-gray-100">
           {{ d.format('D') }}
         </div>
       </div>
+
     </transition-group>
   </section>
 </template>
