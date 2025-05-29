@@ -21,7 +21,7 @@ Supports month navigation, day selection, and highlights today's date.
 ## Demo
 
 <!-- Replace with your actual demo gif or screenshot -->
-![Calendar Demo](./assets/my-calendar.png)
+![Calendar Demo](./src/assets/my-calendar.png)
 
 ---
 
