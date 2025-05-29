@@ -1,19 +1,19 @@
 <template>
-  <nav class="px-4">
+  <nav class="px-4 flex items-center space-x-2">
     <Uibutton
-      :customClass="'bg-gradient-to-r from-emerald-400 to-emerald-600 hover:from-emerald-500 hover:to-emerald-700'"
+      :customClass="'btn btn-sm text-white bg-gradient-to-r from-emerald-400 to-emerald-600 hover:from-emerald-500 hover:to-emerald-700'"
       @click="reset"
     >
       Today
     </Uibutton>
     <Uibutton
-      :customClass="'bg-gradient-to-r mx-4 from-gray-400 to-gray-600 hover:from-orange-500 hover:to-gray-700'"
+      :customClass="'btn btn-sm text-white bg-gradient-to-r from-gray-400 to-gray-600 hover:from-orange-500 hover:to-gray-700'"
       @click="shiftMonth(-1)"
     >
       ← Previous
     </Uibutton>
     <Uibutton
-      :customClass="'bg-gradient-to-r from-gray-400 to-gray-600 hover:from-orange-500 hover:to-gray-700'"
+      :customClass="'btn btn-sm text-white bg-gradient-to-r from-gray-400 to-gray-600 hover:from-orange-500 hover:to-gray-700'"
       @click="shiftMonth(1)"
     >
       Next →
@@ -39,21 +39,23 @@
         :key="d.toISOString().split('T')[0]"
         @click="dayHandle(d)"
         :class="[
-          'border flex flex-col h-24 justify-center items-center cursor-pointer select-none',
-          'border-slate-300 dark:border-slate-600',
+          'card shadow-md transition-all duration-200 ease-in-out',
+          'flex flex-col h-24 justify-center items-center cursor-pointer select-none',
+          'border border-slate-300 dark:border-slate-600',
           'hover:bg-gray-300 dark:hover:bg-gray-700',
           'active:bg-gray-500 dark:active:bg-gray-800',
           isToday(d) ? 'bg-orange-100 dark:bg-orange-600 rounded-full' : '',
           isChosenDay(d) ? 'border-4 border-gray-200 dark:border-gray-400' : ''
         ]"
       >
-        <div class="text-center text-gray-900 dark:text-gray-100">
+        <div class="text-center text-gray-900 dark:text-gray-100 font-bold">
           {{ d.getDate() }}
         </div>
       </div>
     </transition-group>
   </section>
 </template>
+
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
