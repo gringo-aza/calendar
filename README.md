@@ -16,7 +16,7 @@ Supports month navigation, day selection, and highlights today's date.
 - Smooth fade transitions for day and month changes
 - Easy to customize with Tailwind CSS classes and props
 
----
+--- 
 
 ## Demo
 

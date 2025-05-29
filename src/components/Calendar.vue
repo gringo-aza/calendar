@@ -53,29 +53,33 @@
 </template>
 
 <script setup lang="ts">
-import {computed, ref} from 'vue';
-
+import { computed, ref } from 'vue';
 import dayjs from 'dayjs';
-import isToday from 'dayjs/plugin/isToday'
+import isToday from 'dayjs/plugin/isToday';
 import Uibutton from "./Uibutton.vue";
 
 dayjs.extend(isToday);
 
 type Props = {
-  modelValue?: any
-  display?: 'month' | 'year' | 'week' | 'day'
-}
+  modelValue?: any;
+  display?: 'month' | 'year' | 'week' | 'day';
+  startDate?: string;
+};
+
 const props = withDefaults(defineProps<Props>(), {
   modelValue: () => null,
   display: () => 'month',
-  startDate: () => '2022-12-05'
+  startDate: () => '2022-12-05',
 });
+
 const emits = defineEmits(['update:modelValue']);
 
 const viewDate = ref(dayjs(props.startDate));
-const chosenDay = ref({
+
+// Типизируем chosenDay: day и month — числа
+const chosenDay = ref<{ day: number; month: number }>({
   day: 0,
-  month: ""
+  month: 0,
 });
 
 const daystoPrepend = computed(() => {
@@ -83,12 +87,12 @@ const daystoPrepend = computed(() => {
   const startOfFirstWeek = startOfMonth.startOf("week");
   const daysToFirstDay = startOfMonth.diff(startOfFirstWeek, "day");
   return Array.from(new Array(daysToFirstDay).keys());
-})
+});
 
 const dayHandle = (day: dayjs.Dayjs) => {
   chosenDay.value.day = day.date();
-  chosenDay.value.month = day.month() + 1;
-}
+  chosenDay.value.month = day.month() + 1; // month() возвращает 0-11, добавляем 1
+};
 
 const units = computed(() => {
   const start = viewDate.value.startOf('month');
@@ -105,25 +109,24 @@ const units = computed(() => {
   return days;
 });
 
-
 const shiftMonth = function (amount: number) {
   viewDate.value = viewDate.value.add(amount, 'month');
   chosenDay.value.day = 0;
-  chosenDay.value.month = "";
-}
+  chosenDay.value.month = 0;
+};
+
 const reset = function () {
   viewDate.value = dayjs();
   chosenDay.value.day = 0;
-  chosenDay.value.month = "";
-}
-
+  chosenDay.value.month = 0;
+};
 
 const weekDays = computed(() => {
   const start = dayjs().startOf('week');
-  return Array.from({length: 7}, (_, i) => start.add(i, 'day').format('dddd'));
+  return Array.from({ length: 7 }, (_, i) => start.add(i, 'day').format('dddd'));
 });
-
 </script>
+
 
 <style scoped>
 .fade-enter-active, .fade-leave-active {
