@@ -14,7 +14,7 @@ export const useCatFactStore = defineStore('catFact', () => {
             const response = await axios.get('https://catfact.ninja/fact')
             fact.value = response.data.fact
         } catch (err) {
-            error.value = err.message || 'There is some error'
+            error.value = "There is some error";
         } finally {
             loading.value = false
         }
