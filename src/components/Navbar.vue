@@ -6,10 +6,9 @@
            border-b border-gray-300 dark:border-gray-700
            transition-colors duration-500 ease-in-out"
   >
-    <h1 class="text-2xl font-bold opacity-10 select-none cursor-pointer">
-      My Calendar
+    <h1 @click="goToGithub" class="text-2xl font-bold opacity-10 select-none cursor-pointer">
+       My Calendar
     </h1>
-
     <button
       @click="$emit('toggle-dark-mode')"
       aria-label="Toggle dark mode"
@@ -32,4 +31,7 @@
 <script setup lang="ts">
 defineProps<{ darkMode: boolean }>();
 const emit = defineEmits(['toggle-dark-mode']);
+const goToGithub = () => {
+  window.open('https://github.com/gringo-aza', '_blank');
+}
 </script>
