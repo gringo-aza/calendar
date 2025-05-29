@@ -4,7 +4,7 @@ import axios from 'axios'
 
 export const useCatFactStore = defineStore('catFact', () => {
     const fact = ref('')
-    const error = ref(null)
+    const error = ref<string | null>(null)
     const loading = ref(false)
 
     async function fetchFact() {
