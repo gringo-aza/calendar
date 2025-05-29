@@ -31,7 +31,7 @@
       <div>{{ d }}</div>
     </div>
   </header>
-  <section class="overflow-hidden h-[600px]" aria-label="Calendar Days">
+  <section class="overflow-hidden h-[70vh]" aria-label="Calendar Days">
     <transition-group name="fade" tag="div" class="grid grid-cols-7 gap-1">
       <div v-for="p in daystoPrepend" :key="'empty-' + p"></div>
       <div
