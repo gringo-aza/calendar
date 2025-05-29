@@ -1,5 +1,5 @@
 <template>
-  <nav aria-label="Calendar navigation" class="px-4">
+  <nav class="px-4">
     <Uibutton
       :customClass="'bg-gradient-to-r from-emerald-400 to-emerald-600 hover:from-emerald-500 hover:to-emerald-700'"
       @click="reset"
@@ -17,169 +17,137 @@
       @click="shiftMonth(1)"
     >
       Next →
-    </UiButton>
+    </Uibutton>
     <transition name="fade" mode="out-in">
-        <span :key="chosenDay.day" class="text-3xl ml-6">
-  {{ chosenDay.day > 0 ? chosenDay.day : '' }} {{ viewDate.format('MMMM YYYY') }}
-</span>
-
+      <span :key="chosenDay.day" class="text-3xl ml-6">
+        {{ chosenDay.day > 0 ? chosenDay.day : '' }} {{ formatMonthYear }}
+      </span>
     </transition>
   </nav>
-  <header class="grid grid-cols-7 gap-1 my-4" aria-label="Week Days">
-    <div v-for="d in weekDays"
-         class="text-center">
-      <div>{{ d }}</div>
+
+  <header class="grid grid-cols-7 gap-1 my-4">
+    <div v-for="day in weekDays" :key="day" class="text-center font-semibold">
+      {{ day }}
     </div>
   </header>
-  <section class="overflow-hidden h-[70vh]" aria-label="Calendar Days">
+
+  <section class="overflow-hidden h-[70vh]">
     <transition-group name="fade" tag="div" class="grid grid-cols-7 gap-1">
-      <div v-for="p in daystoPrepend" :key="'empty-' + p"></div>
+      <div v-for="p in daystoPrepend" :key="'empty-' + p" class="h-24"></div>
       <div
-        v-for="d in units"
-        :key="d.format('YYYY-MM-DD')"
+        v-for="d in days"
+        :key="d.toISOString().split('T')[0]"
         @click="dayHandle(d)"
         :class="[
-    'border flex flex-col h-24 justify-center cursor-pointer select-none',
-    'border-slate-300 dark:border-slate-600',
-    'hover:bg-gray-300 dark:hover:bg-gray-700',
-    'active:bg-gray-500 dark:active:bg-gray-800',
-    d.isToday() ? 'bg-orange-100 dark:bg-orange-600 mx-10 rounded-full' : '',
-    (d.date() === chosenDay.day && (d.month() + 1) === chosenDay.month) ? 'border-4 border-gray-200 dark:border-gray-400' : ''
-  ]"
+          'border flex flex-col h-24 justify-center items-center cursor-pointer select-none',
+          'border-slate-300 dark:border-slate-600',
+          'hover:bg-gray-300 dark:hover:bg-gray-700',
+          'active:bg-gray-500 dark:active:bg-gray-800',
+          isToday(d) ? 'bg-orange-100 dark:bg-orange-600 rounded-full' : '',
+          isChosenDay(d) ? 'border-4 border-gray-200 dark:border-gray-400' : ''
+        ]"
       >
         <div class="text-center text-gray-900 dark:text-gray-100">
-          {{ d.format('D') }}
+          {{ d.getDate() }}
         </div>
       </div>
-
     </transition-group>
   </section>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue';
-import dayjs from 'dayjs';
-import isToday from 'dayjs/plugin/isToday';
-import Uibutton from "./Uibutton.vue";
+import { ref, computed } from 'vue'
+import Uibutton from './Uibutton.vue'
 
-dayjs.extend(isToday);
+const viewDate = ref(new Date())
 
-type Props = {
-  modelValue?: any;
-  display?: 'month' | 'year' | 'week' | 'day';
-  startDate?: string;
-};
+const chosenDay = ref({ day: 0, month: 0 })
 
-const props = withDefaults(defineProps<Props>(), {
-  modelValue: () => null,
-  display: () => 'month',
-  startDate: () => '2022-12-05',
-});
+const getStartOfMonth = (date: Date): Date =>{
+  return new Date(date.getFullYear(), date.getMonth(), 1)
+}
 
-const emits = defineEmits(['update:modelValue']);
+const getEndOfMonth = (date: Date): Date => {
+  return new Date(date.getFullYear(), date.getMonth() + 1, 0)
+}
 
-const viewDate = ref(dayjs(props.startDate));
+const isSameDay =(d1: Date, d2: Date): boolean => {
+  return d1.toDateString() === d2.toDateString()
+}
 
-// Типизируем chosenDay: day и month — числа
-const chosenDay = ref<{ day: number; month: number }>({
-  day: 0,
-  month: 0,
-});
+const isToday =(date: Date): boolean  =>{
+  const today = new Date()
+  return isSameDay(date, today)
+}
 
-const daystoPrepend = computed(() => {
-  const startOfMonth = viewDate.value.startOf("month");
-  const startOfFirstWeek = startOfMonth.startOf("week");
-  const daysToFirstDay = startOfMonth.diff(startOfFirstWeek, "day");
-  return Array.from(new Array(daysToFirstDay).keys());
-});
+const isChosenDay =(date: Date): boolean => {
+  return (
+    date.getDate() === chosenDay.value.day &&
+    date.getMonth() + 1 === chosenDay.value.month
+  )
+}
 
-const dayHandle = (day: dayjs.Dayjs) => {
-  chosenDay.value.day = day.date();
-  chosenDay.value.month = day.month() + 1; // month() возвращает 0-11, добавляем 1
-};
+const shiftMonth = (amount: number) => {
+  const newDate = new Date(viewDate.value)
+  newDate.setMonth(newDate.getMonth() + amount)
+  viewDate.value = newDate
+  chosenDay.value = { day: 0, month: 0 }
+}
 
-const units = computed(() => {
-  const start = viewDate.value.startOf('month');
-  const end = viewDate.value.endOf('month');
-  const days = [];
+const reset = () => {
+  viewDate.value = new Date()
+  chosenDay.value = { day: 0, month: 0 }
+}
 
-  let current = start;
-
-  while (current.isBefore(end) || current.isSame(end)) {
-    days.push(current);
-    current = current.add(1, 'day');
-  }
-
-  return days;
-});
-
-const shiftMonth = function (amount: number) {
-  viewDate.value = viewDate.value.add(amount, 'month');
-  chosenDay.value.day = 0;
-  chosenDay.value.month = 0;
-};
-
-const reset = function () {
-  viewDate.value = dayjs();
-  chosenDay.value.day = 0;
-  chosenDay.value.month = 0;
-};
+const dayHandle = (date: Date) => {
+  chosenDay.value = { day: date.getDate(), month: date.getMonth() + 1 }
+}
 
 const weekDays = computed(() => {
-  const start = dayjs().startOf('week');
-  return Array.from({ length: 7 }, (_, i) => start.add(i, 'day').format('dddd'));
-});
-</script>
+  const formatter = new Intl.DateTimeFormat('en-US', { weekday: 'short' })
+  const base = new Date(2023, 0, 1) // Sunday
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(base)
+    d.setDate(base.getDate() + i)
+    return formatter.format(d)
+  })
+})
 
+const daystoPrepend = computed(() => {
+  const firstDay = getStartOfMonth(viewDate.value)
+  return firstDay.getDay()
+})
+
+const days = computed(() => {
+  const start = getStartOfMonth(viewDate.value)
+  const end = getEndOfMonth(viewDate.value)
+  const result: Date[] = []
+
+  const current = new Date(start)
+  while (current <= end) {
+    result.push(new Date(current))
+    current.setDate(current.getDate() + 1)
+  }
+
+  return result
+})
+
+const formatMonthYear = computed(() => {
+  return viewDate.value.toLocaleDateString('en-US', {
+    month: 'long',
+    year: 'numeric'
+  })
+})
+</script>
 
 <style scoped>
 .fade-enter-active, .fade-leave-active {
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transition: opacity 0.3s ease;
 }
-
-.fade-enter-from {
+.fade-enter-from, .fade-leave-to {
   opacity: 0;
-  transform: scale(0);
 }
-
-.fade-enter-to {
+.fade-enter-to, .fade-leave-from {
   opacity: 1;
-  transform: scale(0);
-}
-
-.fade-leave-from {
-  opacity: 1;
-  transform: scale(0);
-}
-
-.fade-leave-to {
-  opacity: 0;
-  transform: scale(1);
-}
-
-.fade-slide-enter-active, .fade-slide-leave-active {
-  transition: opacity 0.3s ease, transform 0.3s ease;
-  position: absolute;
-  width: 100%;
-}
-
-.fade-slide-enter-from {
-  opacity: 0;
-  transform: translateX(30px);
-}
-
-.fade-slide-enter-to {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.fade-slide-leave-from {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-.fade-slide-leave-to {
-  opacity: 0;
-  transform: translateX(-30px);
 }
 </style>
