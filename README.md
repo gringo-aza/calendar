@@ -1,5 +1,35 @@
-# Vue 3 + TypeScript + Vite
+# Vue Calendar Component
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+A simple, customizable **Calendar** component built with Vue 3, TypeScript, and Day.js.  
+Supports month navigation, day selection, and highlights today's date.
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+---
+
+## Features
+
+- Display calendar by month view
+- Navigate between months with previous/next buttons
+- Reset to current month with **Today** button
+- Select a specific day with visual highlight
+- Highlight today’s date
+- Responsive grid layout with semantic HTML and accessibility (ARIA) attributes
+- Smooth fade transitions for day and month changes
+- Easy to customize with Tailwind CSS classes and props
+
+---
+
+## Demo
+
+<!-- Replace with your actual demo gif or screenshot -->
+![Calendar Demo](./assets/my-calendar.png)
+
+---
+
+## Installation
+
+Install dependencies:
+
+```bash
+npm install
+# or
+yarn install
